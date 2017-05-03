@@ -22,13 +22,16 @@ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD
 sudo add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linux/ubuntu xenial/'
 sudo apt-get update
 sudo apt-get install r-base
-sudo su - -c "R -e \"install.packages('shiny', repos = 'http://cran.rstudio.com/')\""
+sudo su - -c "R -e \"install.packages(c('shiny','leaflet','RColorBrewer','dplyr'), repos = 'http://cran.rstudio.com/')\""
 ```
 
 
-### Installing the package
+### Installing the app
 
 ```{r}
+git clone https://github.com/trenchproject/biophysweb.git
+cd biophysweb
+
 
 
 ```
