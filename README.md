@@ -40,15 +40,8 @@ sudo su - -c "R -e \"devtools::install_github('bhaskarvk/leaflet.extras')\""
 ```{r}
 git clone https://github.com/trenchproject/biophysweb.git
 cd biophysweb
+nohup R CMD BATCH main.R  > server.out 2>&1&
 
-
-
-```
-### Package Vignette
-
-See the package vignette at
-
-```{r eval=FALSE}
 
 ```
 
@@ -61,7 +54,5 @@ Incorporating below organisms:
 
 ### Citation
 
-If you use this package, We would appreciate a citation. You can see an up to date citation information with `citation("biophysweb")`. You can cite either the package or the accompanying journal article.
-
-### Setup
+If you use this package, We would appreciate a citation. 
 
