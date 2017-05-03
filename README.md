@@ -23,6 +23,15 @@ sudo add-apt-repository 'deb [arch=amd64,i386] https://cran.rstudio.com/bin/linu
 sudo apt-get update
 sudo apt-get install r-base
 sudo su - -c "R -e \"install.packages(c('shiny','leaflet','RColorBrewer','dplyr'), repos = 'http://cran.rstudio.com/')\""
+
+# We need to install devtools as we are going to use experimental leaflet heatmaps
+
+sudo apt-get -y build-dep libcurl4-gnutls-dev
+sudo apt-get -y install libcurl4-gnutls-dev
+
+sudo su - -c "R -e \"install.packages('devtools', repos = 'http://cran.rstudio.com/')\""
+sudo su - -c "R -e \"devtools::install_github('bhaskarvk/leaflet.extras')\""
+ 
 ```
 
 
