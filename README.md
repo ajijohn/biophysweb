@@ -56,3 +56,8 @@ Incorporating below organisms:
 
 If you use this package, We would appreciate a citation. 
 
+### Notes
+
+If you plan to host the Shiny App, remember to use the host(use local IP) and port option.
+
+
