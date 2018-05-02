@@ -12,7 +12,9 @@ library(RColorBrewer)
 library(dplyr)
 library(leaflet.extras)
 
-od<- read.csv(file = "../data/jan1981To.csv")
+od<- NULL
+
+
 
 
 compute_data <- function(updateProgress = NULL) {
@@ -33,7 +35,7 @@ shinyServer(function(input, output) {
 
   # Create a Progress object
   progress <- shiny::Progress$new()
-  progress$set(message = "Computing data", value = 0)
+  progress$set(message = "Loading data", value = 0)
   # Close the progress when this reactive exits (even if there's an error)
   on.exit(progress$close())
 
@@ -50,6 +52,12 @@ shinyServer(function(input, output) {
     progress$set(value = value, detail = detail)
   }
 
+  od <- read.csv(file = "../data/jan1981To.csv")
+
+  # Compute the new data, and pass in the updateProgress function so
+  # that it can update the progress indicator.
+  compute_data(updateProgress)
+
   # This reactive expression represents the palette function,
   # which changes as the user makes selections in UI.
   colorpal <- reactive({
@@ -65,15 +73,20 @@ shinyServer(function(input, output) {
 
     leaflet(filtered()) %>%
       addProviderTiles(providers$Stamen.Terrain)  %>%
-      addDrawToolbar(targetGroup = "test",
+      addDrawToolbar(targetGroup = "controls",
                      rectangleOptions = T,
                      polylineOptions = T,
                      markerOptions = T,
                      editOptions = editToolbarOptions(selectedPathOptions = selectedPathOptions()),
                      circleOptions = drawCircleOptions(shapeOptions = drawShapeOptions(clickable = T))) %>%
 
-      addHeatmap(lng = ~lon, lat = ~lat, intensity = ~To_Lizard,
-                 blur = 20, max = 0.05, radius = 15)
+      # Layers control
+      addLayersControl(
+        overlayGroups = c("Body Temperature", "Thermal Stress", "Distribution"),
+        options = layersControlOptions(collapsed = FALSE,position='bottomleft')
+      )   %>%
+      addHeatmap(lng = ~lon, lat = ~lat, intensity = ~To_Lizard, group = "Body Temperature",
+                 blur = 20, max = 0.01, radius = 15)
   })
 
 
@@ -98,8 +111,6 @@ shinyServer(function(input, output) {
 
 
 
-  # Compute the new data, and pass in the updateProgress function so
-  # that it can update the progress indicator.
-  compute_data(updateProgress)
+
 
 })

@@ -33,7 +33,6 @@ navbarPage("BioPhyz", id="nav",
                         absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
                                       draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
                                       width = 330, height = "auto",
-
                                       h2("Filter"),
 
                                       selectInput("organism", "Organism", vars),
@@ -41,13 +40,12 @@ navbarPage("BioPhyz", id="nav",
                                       radioButtons("suns", "Shading:",inline = TRUE,
                                                    c("Sun" = "sun",
                                                      "Shade" = "shade")),
-                                      numericInput("sac", "%SA in contact with ground", 5),
+                                      numericInput("sac", "% SA in contact with ground", 5),
                                       numericInput("osab", "Organism Solar Absorptivity", 5),
                                       numericInput("gsab", "Ground Solar Absorptivity", 5),
                                       conditionalPanel("input.organism == 'lizard'",
                                                        # Only prompt for svl when chosen Lizard
-
-                                                       numericInput("svl", "Snout Vent Length(cm)", 5)
+                                                   numericInput("svl", "Snout Vent Length(cm)", 5)
                                       ),
                                       conditionalPanel("input.organism == 'generic'",
                                                        radioButtons("shape", "Shape",
@@ -63,10 +61,14 @@ navbarPage("BioPhyz", id="nav",
                                                                 icon("cog"), icon("bug")),
                                                          choiceValues =
                                                            list("calendar", "bed", "cog", "bug")
-                                      )
+                                      ),
 
 
-
+                                      radioButtons("tf", "Timeframe:",inline = TRUE,
+                                                   c("Past" = "past",
+                                                     "Future" = "future")),
+                                      br(),
+                                      submitButton("Download")
 
 
                                       #plotOutput("histCentile", height = 200),
