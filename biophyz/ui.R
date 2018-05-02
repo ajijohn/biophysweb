@@ -8,6 +8,12 @@ vars <- c(
   "Grasshopper" = "grasshopper"
 )
 
+textInputRow<-function (inputId, label, value = "")
+{
+  div(style="display:inline-block",
+      tags$label(label, `for` = inputId),
+      tags$input(id = inputId, type = "text", value = value,class="input-small"))
+}
 
 navbarPage("BioPhyz", id="nav",
 
@@ -32,20 +38,36 @@ navbarPage("BioPhyz", id="nav",
 
                                       selectInput("organism", "Organism", vars),
                                       numericInput("height", "Height(cm)", 5),
-                                      radioButtons("suns", "Shading:",
+                                      radioButtons("suns", "Shading:",inline = TRUE,
                                                    c("Sun" = "sun",
                                                      "Shade" = "shade")),
-
+                                      numericInput("sac", "%SA in contact with ground", 5),
+                                      numericInput("osab", "Organism Solar Absorptivity", 5),
+                                      numericInput("gsab", "Ground Solar Absorptivity", 5),
                                       conditionalPanel("input.organism == 'lizard'",
                                                        # Only prompt for svl when chosen Lizard
+
                                                        numericInput("svl", "Snout Vent Length(cm)", 5)
                                       ),
                                       conditionalPanel("input.organism == 'generic'",
+                                                       radioButtons("shape", "Shape",
+                                                                    list("Cylinder","Sphere"), inline = TRUE, selected = "Cylinder"),
                                                        # Prompt diameter and length
                                                        numericInput("diameter", "Diameter(cm)", 5),
                                                        numericInput("length", "Length(cm)", 5)
 
+                                      ),
+                                      checkboxGroupInput("icons", "Show:", inline = T,
+                                                         choiceNames =
+                                                           list(icon("calendar"), icon("bed"),
+                                                                icon("cog"), icon("bug")),
+                                                         choiceValues =
+                                                           list("calendar", "bed", "cog", "bug")
                                       )
+
+
+
+
 
                                       #plotOutput("histCentile", height = 200),
                                       #plotOutput("scatterCollegeIncome", height = 250)
