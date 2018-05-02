@@ -55,13 +55,9 @@ navbarPage("BioPhyz", id="nav",
                                                        numericInput("length", "Length(cm)", 5)
 
                                       ),
-                                      checkboxGroupInput("icons", "Show:", inline = T,
-                                                         choiceNames =
-                                                           list(icon("calendar"), icon("bed"),
-                                                                icon("cog"), icon("bug")),
-                                                         choiceValues =
-                                                           list("calendar", "bed", "cog", "bug")
-                                      ),
+                                      radioButtons("orientation", "Orientation",inline = TRUE,
+                                                   c("Parallel" = "parallel",
+                                                     "Transverse" = "tverse")),
 
 
                                       radioButtons("tf", "Timeframe:",inline = TRUE,
