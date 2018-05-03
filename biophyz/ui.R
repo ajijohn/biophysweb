@@ -8,13 +8,6 @@ vars <- c(
   "Grasshopper" = "grasshopper"
 )
 
-textInputRow<-function (inputId, label, value = "")
-{
-  div(style="display:inline-block",
-      tags$label(label, `for` = inputId),
-      tags$input(id = inputId, type = "text", value = value,class="input-small"))
-}
-
 navbarPage("BioPhyz", id="nav",
 
            tabPanel("Visualize Stress",
@@ -64,11 +57,11 @@ navbarPage("BioPhyz", id="nav",
                                                    c("Past" = "past",
                                                      "Future" = "future")),
                                       br(),
-                                      submitButton("Download")
+                                      tags$head(
+                                        tags$style(HTML('#goDownload{background-color:orange}'))
+                                      ),
+                                      actionButton("goDownload", "Download", icon = icon("area-chart"))
 
-
-                                      #plotOutput("histCentile", height = 200),
-                                      #plotOutput("scatterCollegeIncome", height = 250)
                         ),
 
                         tags$div(id="cite",
