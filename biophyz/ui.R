@@ -27,6 +27,20 @@ navbarPage("BioPhyz", id="nav",
                                       draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
                                       width = 330, height = "auto",
                                       h2("Filter"),
+                                     HTML("<div class='panel-group' id='accordion'>"),
+
+                                      HTML("<div class='panel panel-default' id='panel0'>
+                                           <div class='panel-heading'>
+                                           <h4 class='panel-title'>
+                                           <a data-toggle='collapse' data-target='#collapseZero'
+                                           href='#collapseZero'>
+                                           Map
+                                           </a>
+                                           </h4>
+
+                                           </div>
+                                           <div id='collapseZero' class='panel-collapse collapse'>
+                                           <div class='panel-body'>"),
 
                                       selectInput("organism", "Organism", vars),
                                       numericInput("height", "Height(cm)", 5),
@@ -35,13 +49,13 @@ navbarPage("BioPhyz", id="nav",
                                                      "Shade" = "shade")),
                                       numericInput("sac", "% SA in contact with ground", 5),
                                       HTML("<div class='input-group'>
-                                        <input type='number' class='form-control' id='osab' placeholder='Organism solar absorptivity'/>
-                                        <span class='input-group-addon'>-</span>
-                                        <input type='number' class='form-control' id='gsab' placeholder='Ground solar absorptivity'/>
-                                        </div>"),
+                                           <input type='number' class='form-control' id='osab' placeholder='Organism solar absorptivity'/>
+                                           <span class='input-group-addon'>-</span>
+                                           <input type='number' class='form-control' id='gsab' placeholder='Ground solar absorptivity'/>
+                                           </div>"),
                                       conditionalPanel("input.organism == 'lizard'",
                                                        # Only prompt for svl when chosen Lizard
-                                                   numericInput("svl", "Snout Vent Length(cm)", 5)
+                                                       numericInput("svl", "Snout Vent Length(cm)", 5)
                                       ),
                                       conditionalPanel("input.organism == 'butterfly'",
                                                        # Only prompt thorax specific inputs when chosen butterfly
@@ -66,6 +80,26 @@ navbarPage("BioPhyz", id="nav",
                                                    c("Parallel" = "parallel",
                                                      "Transverse" = "tverse")),
 
+
+                                      HTML("</div>
+
+
+                                           </div>
+                                           </div>"),
+
+                                      HTML("<div class='panel panel-default' id='panel1'>
+                                           <div class='panel-heading'>
+                                           <h4 class='panel-title'>
+                                           <a data-toggle='collapse' data-target='#collapseOne'
+                                           href='#collapseOne'>
+                                           Location
+                                           </a>
+                                           </h4>
+
+                                           </div>
+                                           <div id='collapseOne' class='panel-collapse collapse'>
+                                           <div class='panel-body'>"),
+
                                       HTML("<div class='input-group'>
                                            <input type='text' class='form-control' id='Nlat' placeholder='N Lat'/>
                                            <span class='input-group-addon'>-</span>
@@ -76,14 +110,45 @@ navbarPage("BioPhyz", id="nav",
                                            <span class='input-group-addon'>-</span>
                                            <input type='text' class='form-control' id='Elon' placeholder='E Lon'/>
                                            </div>"),
-                                      radioButtons("tf", "Timeframe:",inline = TRUE,
-                                                   c("Past" = "past",
-                                                     "Future" = "future")),
+
+
+                                            HTML("</div>
+
+
+                                           </div>
+                                           </div>"),
+
+                                            HTML("<div class='panel panel-default' id='panel2'>
+                                           <div class='panel-heading'>
+                                           <h4 class='panel-title'>
+                                           <a data-toggle='collapse' data-target='#collapseTwo'
+                                           href='#collapseTwo'>
+                                             Output
+                                           </a>
+                                             </h4>
+
+                                             </div>
+                                             <div id='collapseTwo' class='panel-collapse collapse'>
+                                             <div class='panel-body'>"),
+
+                                              radioButtons("tf", "Timeframe:",inline = TRUE,
+                                                   c("Past" = "past", "Present" = "pre",
+                                                 "Future" = "future")),
+
+                                      dateInput("inDate", "Date"),
+                                      sliderInput("n", "Hour", min = 0, max = 24, value = 0),
+
+                                            HTML("</div>
+                                           </div>
+                                           </div>
+                                       </div>"),
+
                                       br(),
                                       tags$head(
                                         tags$style(HTML('#goDownload{color: #fff;background-color:orange; border-color: #2e6da4}'))
                                       ),
                                       actionButton("goDownload", "Download", icon = icon("area-chart"))
+
 
                         ),
 

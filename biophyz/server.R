@@ -13,7 +13,7 @@ library(dplyr)
 library(leaflet.extras)
 
 od<- NULL
-
+outline <- NULL
 
 
 
@@ -31,6 +31,7 @@ compute_data <- function(updateProgress = NULL) {
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
+
 
 
   # Create a Progress object
@@ -53,6 +54,9 @@ shinyServer(function(input, output) {
   }
 
   od <- read.csv(file = "../data/jan1981To.csv")
+  specieas <- read.csv('../data/occurence.csv')
+
+  outline <- specieas[chull(specieas$longitude, specieas$latitude),]
 
   # Compute the new data, and pass in the updateProgress function so
   # that it can update the progress indicator.
@@ -69,9 +73,12 @@ shinyServer(function(input, output) {
     od %>% filter(hr==12)
   })
 
+  # Set value for the minZoom and maxZoom settings.
+  ##leaflet()
+
   output$map <- renderLeaflet({
 
-    leaflet(filtered()) %>%
+    leaflet(filtered(),options = leafletOptions(zoom=0.1)) %>%
       addProviderTiles(providers$Stamen.Terrain)  %>%
       addDrawToolbar(targetGroup = "controls",
                      rectangleOptions = T,
@@ -86,9 +93,64 @@ shinyServer(function(input, output) {
         options = layersControlOptions(collapsed = FALSE,position='bottomleft')
       )   %>%
       addHeatmap(lng = ~lon, lat = ~lat, intensity = ~To_Lizard, group = "Body Temperature",
-                 blur = 20, max = 0.01, radius = 15)
+                 blur = 15,  radius = 10) %>%
+      addPolygons(data = outline, lng = ~longitude, lat = ~latitude,
+                  fill = '#FFFFCC', weight = 2, color = "#FFFFCC", group = "Distribution") %>%
+      setView(lat = 39.76, lng = -105, zoom = 5)
   })
 
+  # Return the UI for a modal dialog with data selection input. If 'failed' is
+  # TRUE, then display a message that the previous value was invalid.
+  dataModal <- function(failed = FALSE) {
+    modalDialog(title = "Download",fade = TRUE,
+      dateRangeInput("daterangeexport", "Date range:"),
+      sliderInput("exporthour", "Hour", min = 0, max = 24, value = 0),
+      selectInput("aggm", label = "Aggregation",
+                  choices = list("Min" = 1, "Max" = 2, "Mean" = 3),
+                  selected = 1),
+      if (failed)
+        div(tags$b("Invalid date range", style = "color: red;")),
+
+      footer = tagList(
+        modalButton("Cancel"),
+        # Download Button
+        downloadButton("downloadData", "Download")
+      )
+    )
+  }
+
+  # When download button is pressed, attempt to load the data set. If successful,
+  # remove the modal. If not show another modal, but this time with a failure
+  # message.
+  observeEvent(input$ok, {
+    # Check that email id is valid.
+    if (!is.null(input$daterangeexport)) {
+
+      removeModal()
+    } else {
+      showModal(dataModal(failed = TRUE))
+    }
+  })
+
+
+  # Downloadable csv of selected dataset ----
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      paste(input$organism, ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(od, file, row.names = FALSE)
+    }
+  )
+
+  observeEvent(input$goDownload, {
+    showNotification("Download invoked.")
+  })
+
+  # Display information about selected data
+  output$dataInfo <- renderPrint({
+
+  })
 
   # Use a separate observer to recreate the legend as needed.
   observe({
@@ -101,6 +163,10 @@ shinyServer(function(input, output) {
   observeEvent(input$map_draw_new_feature, {
     print(input$map_draw_new_feature)
     #Populate bounding box ??
+  })
+
+  observeEvent(input$goDownload, {
+    showModal(dataModal())
   })
 
   observeEvent(input$map_shape_click, {
