@@ -1,14 +1,17 @@
 Package: biophysweb
 Title: Interactive tool to visualize thermal stress.
 Version: 0.0.0.9000
-Authors@R: person("Aji", "John", email = "", role = c("aut", "cre"))
+Authors@R: person("Aji", "John", email = "ajijohn@uw.edu", role = c("aut", "cre"))
 Description: We are developing a mapping interface to integrate the output of the biophysical models with data on species distributions and regions where animal species are likely to experience thermal stress. 
 Depends: R (>= 3.3.2)
 Imports:
      leaflet,
      RColorBrewer,
      ggmap,
-     rgdal
+     rgdal,
+     leaflet.extras,
+     shiny,
+     tidyverse
 License: MIT
 Encoding: UTF-8
 LazyData: true
