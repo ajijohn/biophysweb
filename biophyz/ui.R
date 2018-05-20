@@ -44,11 +44,17 @@ navbarPage("BioPhyz", id="nav",
 
                                       selectInput("organism", "Organism", vars),
                                       numericInput("height", "Height(cm)", 5),
+                                       br(),
                                       radioButtons("suns", "Shading:",inline = TRUE,
                                                    c("Sun" = "sun",
                                                      "Shade" = "shade")),
                                       numericInput("sac", "% SA in contact with ground", 5),
-                                      HTML("<div class='input-group'>
+                                     HTML('<div class="input-group mb-3">
+                                          <div class="input-group-prepend">
+                                          <span class="input-group-text" id="basic-addon3">Solar Absorptivity</span>
+                                          </div>
+                                          </div>'),
+                                     HTML("<div class='input-group'>
                                            <input type='number' class='form-control' id='osab' placeholder='Organism solar absorptivity'/>
                                            <span class='input-group-addon'>-</span>
                                            <input type='number' class='form-control' id='gsab' placeholder='Ground solar absorptivity'/>
@@ -135,7 +141,7 @@ navbarPage("BioPhyz", id="nav",
                                                    c("Past" = "past", "Present" = "pre",
                                                  "Future" = "future")),
 
-                                      dateInput("inDate", "Date"),
+                                      dateInput("inDate", "Date",width="100%"),
                                       sliderInput("n", "Hour", min = 0, max = 24, value = 0),
 
                                             HTML("</div>
