@@ -79,7 +79,8 @@ shinyServer(function(input, output) {
   output$map <- renderLeaflet({
 
     leaflet(filtered(),options = leafletOptions(zoom=0.1)) %>%
-      addProviderTiles(providers$Stamen.Terrain)  %>%
+      #addProviderTiles(providers$Stamen.Terrain)  %>%
+      addProviderTiles(providers$CartoDB.Positron) %>%
       addDrawToolbar(targetGroup = "controls",
                      rectangleOptions = T,
                      polylineOptions = T,
@@ -93,7 +94,7 @@ shinyServer(function(input, output) {
         options = layersControlOptions(collapsed = FALSE,position='bottomleft')
       )   %>%
       addHeatmap(lng = ~lon, lat = ~lat, intensity = ~To_Lizard, group = "Body Temperature",
-                 blur = 15,  radius = 10) %>%
+                 blur = 20,  radius = 15) %>%
       addPolygons(data = outline, lng = ~longitude, lat = ~latitude,
                   fill = '#FFFFCC', weight = 2, color = "#FFFFCC", group = "Distribution") %>%
       setView(lat = 39.76, lng = -105, zoom = 5)
