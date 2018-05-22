@@ -11,6 +11,9 @@ library(shiny)
 library(RColorBrewer)
 library(dplyr)
 library(leaflet.extras)
+library(htmltools)
+library(htmlwidgets)
+library(lubridate)
 
 od<- NULL
 outline <- NULL
@@ -30,9 +33,17 @@ compute_data <- function(updateProgress = NULL) {
 
 
 # Define server logic required to draw a histogram
-shinyServer(function(input, output) {
+shinyServer(function(input, output,session) {
 
+  heatPlugin <- htmlDependency("Leaflet.heat", "99.99.99",
+                               src = c(href = "http://leaflet.github.io/Leaflet.heat/dist/"),
+                               script = "leaflet-heat.js"
+  )
 
+  registerPlugin <- function(map, plugin) {
+    map$dependencies <- c(map$dependencies, list(plugin))
+    map
+  }
 
   # Create a Progress object
   progress <- shiny::Progress$new()
@@ -70,15 +81,19 @@ shinyServer(function(input, output) {
 
 
   filtered <- reactive({
-    od %>% filter(hr==12)
+    od %>% filter(hr==input$hour,day==day(input$inDate))
   })
 
   # Set value for the minZoom and maxZoom settings.
   ##leaflet()
 
   output$map <- renderLeaflet({
+    pal <- colorNumeric(c("red", "green", "blue"), od$To_Lizard)
 
     leaflet(filtered(),options = leafletOptions(zoom=0.1)) %>%
+      fitBounds(min(od$lon), min(od$lat),
+                max(od$lon),     max(od$lat)) %>%
+      registerPlugin(heatPlugin) %>%
       #addProviderTiles(providers$Stamen.Terrain)  %>%
       addProviderTiles(providers$CartoDB.Positron) %>%
       addDrawToolbar(targetGroup = "controls",
@@ -93,11 +108,23 @@ shinyServer(function(input, output) {
         overlayGroups = c("Body Temperature", "Thermal Stress", "Distribution"),
         options = layersControlOptions(collapsed = FALSE,position='bottomleft')
       )   %>%
-      addHeatmap(lng = ~lon, lat = ~lat, intensity = ~To_Lizard, group = "Body Temperature",
-                 blur = 20,  radius = 15) %>%
+      #addHeatmap(lng = ~lon, lat = ~lat, intensity = ~To_Lizard, group = "Body Temperature",
+      #           blur = 20,  radius = 15) %>%
+
+      # addCircleMarkers(lng = ~lon, lat = ~lat,
+      #                  radius = 7,
+      #                  fillColor = ~pal(To_Lizard), group = "Body Temperature",
+      #                  stroke = FALSE, fillOpacity = 1
+      # ) %>%
+      #TODO - Write a min offset for negative values
+      onRender("function(el, x, data) {
+    data = HTMLWidgets.dataframeToD3(data);
+               data = data.map(function(val) { return [val.lat, val.lon, (val.To_Lizard+36)*100]; });
+               L.heatLayer(data, {radius: 25}).addTo(this);
+  }", data = filtered()) %>%
       addPolygons(data = outline, lng = ~longitude, lat = ~latitude,
-                  fill = '#FFFFCC', weight = 2, color = "#FFFFCC", group = "Distribution") %>%
-      setView(lat = 39.76, lng = -105, zoom = 5)
+                  fill = '#FFFFCC', weight = 2, color = "#FFFFCC", group = "Distribution")
+      #setView(lat = 39.76, lng = -105, zoom = 5)
   })
 
   # Return the UI for a modal dialog with data selection input. If 'failed' is
@@ -105,7 +132,7 @@ shinyServer(function(input, output) {
   dataModal <- function(failed = FALSE) {
     modalDialog(title = "Download",fade = TRUE,
       dateRangeInput("daterangeexport", "Date range:"),
-      sliderInput("exporthour", "Hour", min = 0, max = 24, value = 0),
+      sliderInput("exporthour", "Hour", min = 0, max = 23, value = 13),
       selectInput("aggm", label = "Aggregation",
                   choices = list("Min" = 1, "Max" = 2, "Mean" = 3),
                   selected = 1),
@@ -173,11 +200,15 @@ shinyServer(function(input, output) {
   observeEvent(input$map_shape_click, {
     click <- input$map_shape_click
     proxy <- leafletProxy("map")
-    print("shape clicked")
+    #print("shape clicked")
   })
 
 
+  observeEvent(input$inDate, {
 
+    #filtered()
+    #print("shape clicked")
+  })
 
 
 })

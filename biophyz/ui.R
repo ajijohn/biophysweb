@@ -24,7 +24,7 @@ navbarPage("BioPhyz", id="nav",
 
                         # Shiny versions prior to 0.11 should use class = "modal" instead.
                         absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
-                                      draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
+                                      draggable = FALSE, top = 60, left = "auto", right = 20, bottom = "auto",
                                       width = 330, height = "auto",
                                       h2("Filter"),
                                      HTML("<div class='panel-group' id='accordion'>"),
@@ -141,8 +141,8 @@ navbarPage("BioPhyz", id="nav",
                                                    c("Past" = "past", "Present" = "pre",
                                                  "Future" = "future")),
 
-                                      dateInput("inDate", "Date",width="100%"),
-                                      sliderInput("n", "Hour", min = 0, max = 24, value = 0),
+                                      dateInput("inDate", "Date",width="100%",value = "1981-01-01",min = "1981-01-01",max = "1981-01-31"),
+                                      sliderInput("hour", "Hour", min = 0, max = 23, value = 13),
 
                                             HTML("</div>
                                            </div>
@@ -153,6 +153,7 @@ navbarPage("BioPhyz", id="nav",
                                       tags$head(
                                         tags$style(HTML('#goDownload{color: #fff;background-color:orange; border-color: #2e6da4}'))
                                       ),
+
                                       actionButton("goDownload", "Download", icon = icon("area-chart"))
 
 
