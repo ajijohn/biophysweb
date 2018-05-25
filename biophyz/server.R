@@ -94,7 +94,7 @@ shinyServer(function(input, output,session) {
 
   output$map <- renderLeaflet({
 
-
+    #Debug message
     #session$sendCustomMessage("mymessage", 'loaded')
 
     leaflet(filtered(), options = leafletOptions(zoom=0.1)) %>%
