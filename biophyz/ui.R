@@ -8,6 +8,12 @@ vars <- c(
   "Grasshopper" = "grasshopper"
 )
 
+jscode <- '
+Shiny.addCustomMessageHandler("mymessage", function(message) {
+alert(message);
+});
+'
+
 navbarPage("BioPhyz", id="nav",
 
            tabPanel("Visualize Stress",
@@ -17,15 +23,16 @@ navbarPage("BioPhyz", id="nav",
                           # Include our custom CSS
                           includeCSS("../styles.css"),
                           includeScript("../gomap.js")
-                        ),
 
+                        ),
+                        tags$head(tags$script(HTML(jscode))),
                         # If not using custom CSS, set height of leafletOutput to a number instead of percent
                         leafletOutput("map", width="100%", height="100%"),
 
                         # Shiny versions prior to 0.11 should use class = "modal" instead.
                         absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
                                       draggable = FALSE, top = 60, left = "auto", right = 20, bottom = "auto",
-                                      width = 330, height = "auto",
+                                      width = 400, height = "auto",
                                       h2("Filter"),
                                      HTML("<div class='panel-group' id='accordion'>"),
 
@@ -154,7 +161,9 @@ navbarPage("BioPhyz", id="nav",
                                         tags$style(HTML('#goDownload{color: #fff;background-color:orange; border-color: #2e6da4}'))
                                       ),
 
-                                      actionButton("goDownload", "Download", icon = icon("area-chart"))
+                                      actionButton("goDownload", "Download", icon = icon("area-chart")),
+
+                                     checkboxInput("legend", "Show legend", TRUE)
 
 
                         ),

@@ -19,7 +19,6 @@ od<- NULL
 outline <- NULL
 
 
-
 compute_data <- function(updateProgress = NULL) {
   # Create 0-row data frame which will be used to store data
   # If we were passed a progress update function, call it
@@ -81,16 +80,24 @@ shinyServer(function(input, output,session) {
 
 
   filtered <- reactive({
-    od %>% filter(hr==input$hour,day==day(input$inDate))
+      od %>% filter(hr==input$hour,day==day(input$inDate))
+  })
+
+  inputDate <- reactive({
+    input$inDate
   })
 
   # Set value for the minZoom and maxZoom settings.
   ##leaflet()
 
-  output$map <- renderLeaflet({
-    pal <- colorNumeric(c("red", "green", "blue"), od$To_Lizard)
+  pal <- colorNumeric(c("red", "green", "blue"), od$To_Lizard)
 
-    leaflet(filtered(),options = leafletOptions(zoom=0.1)) %>%
+  output$map <- renderLeaflet({
+
+
+    #session$sendCustomMessage("mymessage", 'loaded')
+
+    leaflet(filtered(), options = leafletOptions(zoom=0.1)) %>%
       fitBounds(min(od$lon), min(od$lat),
                 max(od$lon),     max(od$lat)) %>%
       registerPlugin(heatPlugin) %>%
@@ -108,8 +115,8 @@ shinyServer(function(input, output,session) {
         overlayGroups = c("Body Temperature", "Thermal Stress", "Distribution"),
         options = layersControlOptions(collapsed = FALSE,position='bottomleft')
       )   %>%
-      #addHeatmap(lng = ~lon, lat = ~lat, intensity = ~To_Lizard, group = "Body Temperature",
-      #           blur = 20,  radius = 15) %>%
+      addHeatmap(lng = ~lon, lat = ~lat, intensity = ~To_Lizard+36, group = "Body Temperature",
+                 blur = 20,  radius = 25) %>%
 
       # addCircleMarkers(lng = ~lon, lat = ~lat,
       #                  radius = 7,
@@ -117,11 +124,11 @@ shinyServer(function(input, output,session) {
       #                  stroke = FALSE, fillOpacity = 1
       # ) %>%
       #TODO - Write a min offset for negative values
-      onRender("function(el, x, data) {
-    data = HTMLWidgets.dataframeToD3(data);
-               data = data.map(function(val) { return [val.lat, val.lon, (val.To_Lizard+36)*100]; });
-               L.heatLayer(data, {radius: 25}).addTo(this);
-  }", data = filtered()) %>%
+      #onRender("function(el, x, data) {
+    #data = HTMLWidgets.dataframeToD3(data);
+    #           data = data.map(function(val) { return [val.lat, val.lon, (val.To_Lizard+36)*100]; });
+  #             L.heatLayer(data, {radius: 25}).addTo(this);
+  #}", data = filtered()) %>%
       addPolygons(data = outline, lng = ~longitude, lat = ~latitude,
                   fill = '#FFFFCC', weight = 2, color = "#FFFFCC", group = "Distribution")
       #setView(lat = 39.76, lng = -105, zoom = 5)
@@ -183,8 +190,21 @@ shinyServer(function(input, output,session) {
   # Use a separate observer to recreate the legend as needed.
   observe({
     proxy <- leafletProxy("map", data = filtered())
+    proxy %>% clearControls()
+    if (input$legend) {
+      proxy %>% addLegend(position = "bottomright",
+                          pal = pal, values = ~To_Lizard
+      )
+    }
 
+  })
 
+  #Redraw the map
+
+  observe({
+    proxy <- leafletProxy("map", data = filtered())
+    # Create circles with layerIds of "A", "B", "C"...
+    proxy %>% addCircles(1:10, 1:10, layerId = LETTERS[1:10])
   })
 
   # Feature when added.
@@ -205,10 +225,10 @@ shinyServer(function(input, output,session) {
 
 
   observeEvent(input$inDate, {
+    #debugger message
+    #session$sendCustomMessage("mymessage", input$hour)
 
-    #filtered()
-    #print("shape clicked")
+
   })
-
 
 })
