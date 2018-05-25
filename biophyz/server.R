@@ -115,8 +115,8 @@ shinyServer(function(input, output,session) {
         overlayGroups = c("Body Temperature", "Thermal Stress", "Distribution"),
         options = layersControlOptions(collapsed = FALSE,position='bottomleft')
       )   %>%
-      addHeatmap(lng = ~lon, lat = ~lat, intensity = ~To_Lizard+36, group = "Body Temperature",
-                 blur = 20,  radius = 25) %>%
+      #addHeatmap(lng = ~lon, lat = ~lat, intensity = ~To_Lizard+36, group = "Body Temperature",
+      #           blur = 20,  radius = 25) %>%
 
       # addCircleMarkers(lng = ~lon, lat = ~lat,
       #                  radius = 7,
@@ -124,13 +124,16 @@ shinyServer(function(input, output,session) {
       #                  stroke = FALSE, fillOpacity = 1
       # ) %>%
       #TODO - Write a min offset for negative values
-      #onRender("function(el, x, data) {
-    #data = HTMLWidgets.dataframeToD3(data);
-    #           data = data.map(function(val) { return [val.lat, val.lon, (val.To_Lizard+36)*100]; });
-  #             L.heatLayer(data, {radius: 25}).addTo(this);
-  #}", data = filtered()) %>%
+      onRender("function(el, x, data) {
+    data = HTMLWidgets.dataframeToD3(data);
+               data = data.map(function(val) { return [val.lat, val.lon, (val.To_Lizard+36)*100]; });
+               L.heatLayer(data, {radius: 25}).addTo(this);
+  }", data = filtered()) %>%
       addPolygons(data = outline, lng = ~longitude, lat = ~latitude,
-                  fill = '#FFFFCC', weight = 2, color = "#FFFFCC", group = "Distribution")
+                  fill = '#FFFFCC', weight = 2, color = "#FFFFCC", group = "Distribution") %>%
+     addLegend(position = "bottomright",
+                                          pal = pal, values = ~To_Lizard
+                       )
       #setView(lat = 39.76, lng = -105, zoom = 5)
   })
 
@@ -188,23 +191,22 @@ shinyServer(function(input, output,session) {
   })
 
   # Use a separate observer to recreate the legend as needed.
-  observe({
-    proxy <- leafletProxy("map", data = filtered())
-    proxy %>% clearControls()
-    if (input$legend) {
-      proxy %>% addLegend(position = "bottomright",
-                          pal = pal, values = ~To_Lizard
-      )
-    }
+   observe({
+     proxy <- leafletProxy("map", data = filtered())
+     proxy %>% clearControls()
+     if (input$legend) {
+       proxy %>% addLegend(position = "bottomright",
+                           pal = pal, values = ~To_Lizard
+       )
+     }
 
-  })
+   })
 
   #Redraw the map
 
   observe({
     proxy <- leafletProxy("map", data = filtered())
-    # Create circles with layerIds of "A", "B", "C"...
-    proxy %>% addCircles(1:10, 1:10, layerId = LETTERS[1:10])
+
   })
 
   # Feature when added.
