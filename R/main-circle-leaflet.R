@@ -1,11 +1,11 @@
 require(shiny)
 require(leaflet)
-library(RColorBrewer)
+
 library(leaflet.extras)
 library(magrittr)
 library(dplyr)
 
-od<- read.csv("./data/jan1981To.csv")
+od<- read.csv("../data/jan1981To.csv")
 
 
 ui <- bootstrapPage(
@@ -48,8 +48,8 @@ server <- function(input, output, session) {
    od %>% filter(day == input$day,month==input$month,hr==input$hour)
   })
 
- 
-  #show the quantile color map with dots 
+
+  #show the quantile color map with dots
   output$myMap <- renderLeaflet({
     ds <- filtered()
     pal <- colorpal()
@@ -59,13 +59,15 @@ server <- function(input, output, session) {
       radius = 7,
       fillColor = ~pal(To_Lizard),
       stroke = FALSE, fillOpacity = 0.5
-    ) 
+    )
   })
 
 
   # Use a separate observer to recreate the legend as needed.
   observe({
     proxy <- leafletProxy("myMap", data = filtered())
+
+
 
     # Remove any existing legend, and only if the legend is
     # enabled, create a new one.

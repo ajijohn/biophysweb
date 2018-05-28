@@ -5,7 +5,7 @@ library(leaflet.extras)
 library(magrittr)
 library(dplyr)
 
-od<- read.csv("./data/jan1981To.csv")
+od<- read.csv("../data/jan1981To.csv")
 
 
 ui <- bootstrapPage(
@@ -48,19 +48,19 @@ server <- function(input, output, session) {
    od %>% filter(day == input$day,month==input$month,hr==input$hour)
   })
 
- 
-  #show the quantile color map with dots 
+
+  #show the quantile color map with dots
   output$myMap <- renderLeaflet({
     ds <- filtered()
     qpal <- colorQuantile("Reds", ds$To_Lizard, n = 7)
-    
+
     leaflet(ds) %>%
         addProviderTiles(providers$Stamen.Terrain)  %>%
        addCircleMarkers(lng = ~lon, lat = ~lat,
       radius = 6,
       color = ~qpal(To_Lizard),
       stroke = FALSE, fillOpacity = 0.5
-    ) 
+    )
   })
 
 
