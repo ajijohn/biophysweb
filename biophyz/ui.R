@@ -22,7 +22,9 @@ navbarPage("BioPhyz", id="nav",
                         tags$head(
                           # Include our custom CSS
                           includeCSS("../styles.css"),
-                          includeScript("../gomap.js")
+                          includeScript("../gomap.js"),
+                          includeScript("../accordion.js"),
+                          includeScript("../leaflet-heat.js")
 
                         ),
                         tags$head(tags$script(HTML(jscode))),
