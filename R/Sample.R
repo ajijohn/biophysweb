@@ -6,10 +6,11 @@ library(dplyr)
 library(sp)
 library(rgdal)
 
-od<- read.csv("./data/jan1981To.csv")
+
+od<- read.csv(paste(strsplit(getwd(), "/R")[[1]],"/data/jan1981To.csv",sep=""))
 
 # Filter for a day at a certain hour
-# 20 hrs 
+# 20 hrs
 odf <- od %>% filter(day == 1,month==1,hr==20)
 
 pal <- colorNumeric(

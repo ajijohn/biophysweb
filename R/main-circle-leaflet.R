@@ -5,7 +5,7 @@ library(leaflet.extras)
 library(magrittr)
 library(dplyr)
 
-od<- read.csv("../data/jan1981To.csv")
+od<- read.csv(paste(strsplit(getwd(), "/R")[[1]] , "/data/jan1981To.csv",sep = "" ))
 
 
 ui <- bootstrapPage(

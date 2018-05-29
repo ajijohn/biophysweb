@@ -63,8 +63,8 @@ shinyServer(function(input, output,session) {
     progress$set(value = value, detail = detail)
   }
 
-  od <- read.csv(file = "../data/jan1981To.csv")
-  specieas <- read.csv('../data/occurence.csv')
+  od <- read.csv(paste(strsplit(getwd(), "/biophyz")[[1]],"/data/jan1981To.csv",sep=""))
+  specieas <- read.csv(paste(strsplit(getwd(), "/biophyz")[[1]],"/data/occurence.csv",sep=""))
 
   outline <- specieas[chull(specieas$longitude, specieas$latitude),]
 
@@ -223,6 +223,21 @@ shinyServer(function(input, output,session) {
     click <- input$map_shape_click
     proxy <- leafletProxy("map")
     #print("shape clicked")
+    c <- paste(sep = "<br/>", "<b>HELLO</b>", "<i>world</i>",
+               as.character(div(renderPlot({d}))),
+               tags$ul(
+                 tags$li("First list item"),
+                 tags$li("Second list item"),
+                 tags$li("Third list item")
+               ),
+               tags$div(class = "graph",
+                        tags$div(style="height: 22px;", class="bar"),
+                        tags$div(style="height: 6px;", class="bar")),
+               tags$img(src = "http://www.rstudio.com/wp-content/uploads/2014/07/RStudio-Logo-Blue-Gradient.png", width = "100px", height = "100px")
+    )
+
+    proxy %>%
+      addMarkers(lat = 39.76, lng = -105, popup= c)
   })
 
 

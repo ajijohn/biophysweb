@@ -5,7 +5,8 @@ library(leaflet.extras)
 library(magrittr)
 library(dplyr)
 
-od<- read.csv("./data/jan1981To.csv")
+
+od<- read.csv(paste(strsplit(getwd(), "/R")[[1]],"/data/jan1981To.csv",sep=""))
 
 ui <- bootstrapPage(
   tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
@@ -51,10 +52,10 @@ server <- function(input, output, session) {
 
   output$myMap <- renderLeaflet({
 
-    leaflet(filtered()) %>%
+    leaflet(filtered(),options = leafletOptions(zoom=0.1)) %>%
         addProviderTiles(providers$Stamen.Terrain)  %>%
-      addHeatmap(lng = ~lon, lat = ~lat, intensity = ~To_Lizard,
-                 blur = 20, max = 0.05, radius = 15)
+      addHeatmap(lng = ~lon, lat = ~lat, intensity = ~To_Lizard+40,
+                 blur = 20, max = 0.05, radius = 25)
   })
 
 
