@@ -15,6 +15,12 @@ library(htmltools)
 library(htmlwidgets)
 library(lubridate)
 
+#To add IDW layer on raster
+library(sp)
+library(gstat)
+library(raster)
+
+
 od<- NULL
 outline <- NULL
 
@@ -97,7 +103,26 @@ shinyServer(function(input, output,session) {
     #Debug message
     #session$sendCustomMessage("mymessage", 'loaded')
 
-    leaflet(filtered(), options = leafletOptions(zoom=0.1)) %>%
+    filt <- filtered()
+
+    frame=as.data.frame(cbind(filt$lon,filt$lat,filt$To_Lizard))
+    names(frame) <- c('x','y','temp')
+    frame.xy = frame[c("x", "y")]
+    coordinates(frame.xy ) <- ~x+y
+
+    x.range <- range(frame$x)
+    y.range <- range(frame$y)
+
+    grd <- expand.grid(x = seq(from = x.range[1], to = x.range[2], by = 0.1),
+                       y = seq(from = y.range[1], to = y.range[2], by = 0.1))
+    coordinates(grd) <- ~x + y
+    gridded(grd) <- TRUE
+
+    idw <- idw(formula = frame$temp ~ 1, locations = frame.xy,
+               newdata = grd)
+    crs(idw) <- sp::CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+
+    leaflet(idw, options = leafletOptions(zoom=0.1)) %>%
       fitBounds(min(od$lon), min(od$lat),
                 max(od$lon),     max(od$lat)) %>%
       registerPlugin(heatPlugin) %>%
@@ -124,15 +149,16 @@ shinyServer(function(input, output,session) {
       #                  stroke = FALSE, fillOpacity = 1
       # ) %>%
       #TODO - Write a min offset for negative values
-      onRender("function(el, x, data) {
-    data = HTMLWidgets.dataframeToD3(data);
-               data = data.map(function(val) { return [val.lat, val.lon, (val.To_Lizard+36)*100]; });
-               L.heatLayer(data, {radius: 25}).addTo(this);
-  }", data = filtered()) %>%
+      #onRender("function(el, x, data) {
+      #data = HTMLWidgets.dataframeToD3(data);
+      #         data = data.map(function(val) { return [val.lat, val.lon, (val.To_Lizard+36)*100]; });
+      #         L.heatLayer(data, {radius: 25}).addTo(this);
+      #}", data = filtered()) %>%
+      addRasterImage(raster(idw), opacity = 0.5) %>%
       addPolygons(data = outline, lng = ~longitude, lat = ~latitude,
                   fill = '#FFFFCC', weight = 2, color = "#FFFFCC", group = "Distribution") %>%
-     addLegend(position = "bottomright",
-                                          pal = pal, values = ~To_Lizard
+        addLegend(position = "bottomright",
+                                          pal = pal, values = idw$var1.pred
                        )
       #setView(lat = 39.76, lng = -105, zoom = 5)
   })
@@ -219,26 +245,27 @@ shinyServer(function(input, output,session) {
     showModal(dataModal())
   })
 
-  observeEvent(input$map_shape_click, {
-    click <- input$map_shape_click
-    proxy <- leafletProxy("map")
-    #print("shape clicked")
-    c <- paste(sep = "<br/>", "<b>HELLO</b>", "<i>world</i>",
-               as.character(div(renderPlot({d}))),
-               tags$ul(
-                 tags$li("First list item"),
-                 tags$li("Second list item"),
-                 tags$li("Third list item")
-               ),
-               tags$div(class = "graph",
-                        tags$div(style="height: 22px;", class="bar"),
-                        tags$div(style="height: 6px;", class="bar")),
-               tags$img(src = "http://www.rstudio.com/wp-content/uploads/2014/07/RStudio-Logo-Blue-Gradient.png", width = "100px", height = "100px")
-    )
-
-    proxy %>%
-      addMarkers(lat = 39.76, lng = -105, popup= c)
-  })
+  #TODO Onclick on the map - show details of interpolation
+  # observeEvent(input$map_shape_click, {
+  #   click <- input$map_shape_click
+  #   proxy <- leafletProxy("map")
+  #   #print("shape clicked")
+  #   c <- paste(sep = "<br/>", "<b>Breakdown</b>", "<i>EB</i>",
+  #              as.character(div(renderPlot({d}))),
+  #              tags$ul(
+  #                tags$li("First list item"),
+  #                tags$li("Second list item"),
+  #                tags$li("Third list item")
+  #              ),
+  #              tags$div(class = "graph",
+  #                       tags$div(style="height: 22px;", class="bar"),
+  #                       tags$div(style="height: 6px;", class="bar")),
+  #              tags$img(src = "http://www.rstudio.com/wp-content/uploads/2014/07/RStudio-Logo-Blue-Gradient.png", width = "100px", height = "100px")
+  #   )
+  #
+  #   proxy %>%
+  #     addMarkers(lat = 39.76, lng = -105, popup= c)
+  # })
 
 
   observeEvent(input$inDate, {
