@@ -56,6 +56,9 @@ Incorporating below organisms:
 
 If you use this package, We would appreciate a citation. 
 
+### DOI
+[![DOI](https://zenodo.org/badge/90196963.svg)](https://zenodo.org/badge/latestdoi/90196963)
+
 ### Notes
 
 If you plan to host the Shiny App, remember to use the host(use local IP) and port option.
