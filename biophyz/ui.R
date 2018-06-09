@@ -43,7 +43,7 @@ navbarPage("BioPhyz", id="nav",
                                            <h4 class='panel-title'>
                                            <a data-toggle='collapse' data-target='#collapseZero'
                                            href='#collapseZero'>
-                                           Map
+                                           Animal Properties
                                            </a>
                                            </h4>
 
@@ -52,7 +52,7 @@ navbarPage("BioPhyz", id="nav",
                                            <div class='panel-body'>"),
 
                                       selectInput("organism", "Organism", vars),
-                                      numericInput("height", "Height(cm)", 5),
+                                      numericInput("height", "Height above ground(cm)", 5),
                                        br(),
                                       radioButtons("suns", "Shading:",inline = TRUE,
                                                    c("Sun" = "sun",
@@ -138,7 +138,7 @@ navbarPage("BioPhyz", id="nav",
                                            <h4 class='panel-title'>
                                            <a data-toggle='collapse' data-target='#collapseTwo'
                                            href='#collapseTwo'>
-                                             Output
+                                             Time Period
                                            </a>
                                              </h4>
 
